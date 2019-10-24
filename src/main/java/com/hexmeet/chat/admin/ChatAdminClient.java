@@ -2,22 +2,35 @@ package com.hexmeet.chat.admin;
 
 import pbx.NodeGrpc;
 import pbx.Model.ClientHi;
+import pbx.Model.ClientLogin;
 import pbx.Model.ClientMsg;
 import pbx.Model.ServerMsg;
 import pbx.Model.ServerMsg.MessageCase;
+
+import com.google.protobuf.ByteString;
+
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
 
 class ChatAdminClient implements Runnable{
 	
-	private static final String HOST = "127.0.0.1";
+	private static final String HOST = "172.15.0.2";
     private static final int PORT = 6061;
     
     private ManagedChannel 		channel;
     private NodeGrpc.NodeStub 	stub;
     StreamObserver<ClientMsg> 	cliObserver;
     int 						msgId;
+    
+    private static final ChatAdminClient DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new ChatAdminClient();
+    }
+
+    public static ChatAdminClient getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
     
     ChatAdminClient(){
     	
@@ -87,6 +100,19 @@ class ChatAdminClient implements Runnable{
          cliObserver.onNext(chatMessage.build());
     }
     
+    public void login() {
+    	ClientLogin.Builder login_builder = ClientLogin.newBuilder();
+    	login_builder.setId("2");
+    	login_builder.setScheme("basic");
+    	String secret = "xena:xena123";
+    	login_builder.setSecret(ByteString.copyFrom(secret.getBytes()));
+    	ClientLogin login = login_builder.build();
+    	pbx.Model.ClientMsg.Builder chatMessage = ClientMsg.newBuilder().
+					setLogin(login);
+    	cliObserver.onNext(chatMessage.build());
+						
+    }
+    
     public void sendMessage(pbx.Model.ClientMsg.Builder chatMessage) {
     	cliObserver.onNext(chatMessage.build());
     }
@@ -121,11 +147,12 @@ class ChatAdminClient implements Runnable{
         //ServerMsg serMsg;
         //stub.bindService();
         //ServerResponse helloResponse = stub.(msg);
-    	ChatAdminClient admin = new ChatAdminClient();
+    	ChatAdminClient admin = ChatAdminClient.getDefaultInstance();
     	admin.sendHi();
     	Thread admin_thread = new Thread(admin);
 
     	admin_thread.start();
+    	//admin.login();
     	admin_thread.join();
         
     	System.out.println("app exited...");

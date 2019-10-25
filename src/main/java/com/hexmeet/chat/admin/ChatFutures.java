@@ -13,7 +13,7 @@ public class ChatFutures {
 		}
 	}
 	
-	ChatPromisedReply retrieveReply(String msgId) {
+	public ChatPromisedReply retrieveReply(String msgId) {
 		ChatPromisedReply reply = null;
 			synchronized (this) {
 			if (reply_map.containsKey(msgId)) {

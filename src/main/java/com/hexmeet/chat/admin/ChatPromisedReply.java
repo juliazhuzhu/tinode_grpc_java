@@ -22,7 +22,7 @@ public class ChatPromisedReply {
 	}
 	
 	public void reject(String msgId, int code, String text, String reason) {
-		
+	
 		msg_handler.onFailure(msgId, code, text);
 	}
 	

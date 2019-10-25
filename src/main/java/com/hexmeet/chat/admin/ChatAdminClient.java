@@ -1,11 +1,13 @@
 package com.hexmeet.chat.admin;
 
 import pbx.NodeGrpc;
+import pbx.Model.ClientDel;
 import pbx.Model.ClientHi;
 import pbx.Model.ClientLogin;
 import pbx.Model.ClientMsg;
 import pbx.Model.ClientSub;
 import pbx.Model.ServerMsg;
+import pbx.Model.ClientDel.What;
 import pbx.Model.ServerMsg.MessageCase;
 
 import com.google.protobuf.ByteString;
@@ -183,6 +185,45 @@ class ChatAdminClient implements Runnable{
         
         
     	return "3";
+    }
+    
+    public String attachChatGroup(String groupId) {
+    	
+    	ClientSub.Builder sub_buidler = ClientSub.newBuilder();
+    	sub_buidler.setId("5");
+    	sub_buidler.setTopic(groupId);
+    	//FieldDescriptor filed = sub_builder.
+    	//Message msg = new Message();
+    	//MessageOrBuilder
+    	//sub_buidler.getFieldBuilder(field)
+    	//sub_buidler.setField(field, value)
+    	
+    	//sub_buidler.setTopicBytes()
+    	ClientSub sub = sub_buidler.build();
+    	pbx.Model.ClientMsg.Builder chatMessage = ClientMsg.newBuilder().
+				setSub(sub);
+    	cliObserver.onNext(chatMessage.build());
+	
+    	ChatSubMsgResponseHandler sub_handler = new ChatSubMsgResponseHandler();
+        ChatPromisedReply reply = new ChatPromisedReply(sub_handler);
+        futures.push(sub_buidler.getId(), reply);
+        
+        return "5";
+    }
+    
+    public String delChatGroup(String groupId) {
+    	
+    	ClientDel.Builder del_builder = ClientDel.newBuilder();
+    	del_builder.setId("4");
+    	del_builder.setTopic(groupId);
+    	del_builder.setWhat(What.forNumber(1));
+    	
+    	ClientDel del = del_builder.build();
+    	pbx.Model.ClientMsg.Builder chatMessage = ClientMsg.newBuilder().
+				setDel(del);
+    	cliObserver.onNext(chatMessage.build());
+    	
+    	return "4";
     }
     
     public void deleteChatGroup(String groupId) {

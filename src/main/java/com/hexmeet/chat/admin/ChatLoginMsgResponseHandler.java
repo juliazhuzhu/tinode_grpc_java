@@ -9,7 +9,8 @@ public class ChatLoginMsgResponseHandler implements ChatServerMsgHandler {
 		
 		//to notify that login is okay
 		System.out.println("login is oky");
-		//ChatAdminClient.getDefaultInstance().createChatGroup("ff","ff");
+		ChatAdminClient.getDefaultInstance().attachChatGroup("grp4tVzpNn-KL8");
+		ChatAdminClient.getDefaultInstance().delChatGroup("grp4tVzpNn-KL8");
 	}
 	
 	@Override

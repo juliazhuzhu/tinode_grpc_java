@@ -7,5 +7,3 @@ public interface ChatServerMsgHandler {
 	public void onSucess(ServerMsg msg);
 	public void onFailure(String msgId,int code, String text);
 }
-
-

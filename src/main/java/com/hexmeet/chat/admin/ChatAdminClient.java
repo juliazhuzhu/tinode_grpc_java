@@ -39,6 +39,10 @@ class ChatAdminClient implements Runnable{
     private int							grpc_exit;
     private	static final Logger logger = Logger.getLogger("HmChatAdminLog");
     private String 						logFilePath;
+    private ChatEventNotifier			eventNotifier;
+    private ChatAdminEventQueue			eventQueue;
+    private Thread 						event_thread;
+    
     static {
       DEFAULT_INSTANCE = new ChatAdminClient();
     }
@@ -51,6 +55,7 @@ class ChatAdminClient implements Runnable{
     ChatAdminClient(){
     	host = "127.0.0.1";
     	port = 6061;
+    	
     	try {
     		FileHandler fh;  
     		if (logFilePath == null) {
@@ -66,7 +71,8 @@ class ChatAdminClient implements Runnable{
         } catch (IOException e) {  
             e.printStackTrace();  
         }  
-    	
+    	eventQueue = new ChatAdminEventQueue();
+    	event_thread = new Thread(eventQueue);
     }
     
     private String genMsgId() {
@@ -146,9 +152,10 @@ class ChatAdminClient implements Runnable{
     	System.out.println("loop begins");
     	//futures.start();
     	messageLoop();
+    	event_thread.start();
     	while (true) {
 	    	if(grpc_exit == 1) {
-	    		//messageLoop();
+	    		//messageLoop()
 	    		return;
 	    	}
     		try {
@@ -160,8 +167,9 @@ class ChatAdminClient implements Runnable{
         }
     }
     
-    public void exit() {
+    public void stop() {
     	grpc_exit = 1;
+    	eventQueue.stop();
     }
     
     public void sendHi() {
@@ -300,50 +308,25 @@ class ChatAdminClient implements Runnable{
     	logFilePath = path;
     }
     
-    private final static Logger LOGGER =  
-            Logger.getLogger(Logger.GLOBAL_LOGGER_NAME); 
+    public ChatEventNotifier getEventNotifier() {
+    	return eventNotifier;
+    }
     
+    public void setEventNotifier(ChatEventNotifier eventNoitifier) {
+    	
+    	this.eventNotifier = eventNoitifier;
+    }
+    
+   
     public static void main(String[] args) throws InterruptedException {
-    	
-    	 // Create a channel
-        
-        
-        //ClientHi hi = new ClientHi();
-       // Builder builder = new Buidler();
-       // ClientHi hi = new ClientHi();
-        
-       // ClientMsg cliMsg = ClientMsg.newBuilder().setHi(hi.toBuilder()).build();
-        
-    	
-        
-     // Create a blocking stub with the channel
-        
-        
-      
-        //ClientHi.Builder builder = new ClientHi.Builder();
-       
-        		
-        
-        // Send the message
-        //cliObserver.onNext(chatMessage.build());
-
-        
-        //ClientMsg clientMsg = new ClientMsg();
-        //cliMsg.newBuilder().setHi
-        //ServerMsg serMsg;
-        //stub.bindService();
-        //ServerResponse helloResponse = stub.(msg);
     	
     	ChatAdminClient admin = ChatAdminClient.getDefaultInstance();
     	//admin.setHost("172.24.0.63");
     	//admin.setPort(6061);
-    	//admin.sendHi();
     	admin.setUser("xena");
     	admin.setPassword("xena123");
     	admin.setLogPath("/Users/zhuyiye/Downloads/MyLogFile.log");
-    	
     	Thread admin_thread = new Thread(admin);
-
     	admin_thread.start();
     	//admin.login();
     	admin_thread.join();
@@ -351,33 +334,6 @@ class ChatAdminClient implements Runnable{
     	System.out.println("app exited...");
     	
     	
-  
-        // Generating some log messages through the  
-        // function defined above 
-       // LogManager lgmngr = LogManager.getLogManager(); 
-    	/*Logger logger = Logger.getLogger("MyLog");  
-    	try {
-    		
-            FileHandler fh;  
-            fh = new FileHandler("/Users/zhuyiye/Downloads/MyLogFile.log");  
-            logger.addHandler(fh);
-            SimpleFormatter formatter = new SimpleFormatter();  
-            fh.setFormatter(formatter);  
-      
-            // lgmngr now contains a reference to the log manager. 
-            //Logger log = lgmngr.getLogger(Logger.GLOBAL_LOGGER_NAME); 
-      
-            // Getting the global application level logger  
-            // from the Java Log Manager 
-            logger.log(Level.INFO, "This is a log message"); 
-    	}
-    	catch (SecurityException e) {  
-            e.printStackTrace();  
-        } catch (IOException e) {  
-            e.printStackTrace();  
-        }  
-
-        logger.info("Hi How r u?");  */
     }
     
 }

@@ -4,6 +4,7 @@ package com.hexmeet.chat.admin;
 public class ChatAdminEvent {
 	
 	public enum EVENT_TYPE {
+		HI_FAILURE,
 		LOGIN_SUCCESS,
 		ADDGROUP_SUCESS,
 		DELGROUP_SUCESS,

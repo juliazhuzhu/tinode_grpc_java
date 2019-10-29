@@ -1,6 +1,6 @@
 package com.hexmeet.chat.admin;
 
-public class ChatAdminGrpMsgEvent extends ChatAdminMsgEvent{
+public class ChatAdminGroupMsgEvent extends ChatAdminMsgEvent{
 
 	private String groupId;
 	public void setGroupId(String groupId) {

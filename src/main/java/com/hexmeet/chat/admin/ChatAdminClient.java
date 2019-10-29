@@ -10,6 +10,7 @@ import pbx.Model.ServerMsg;
 import pbx.Model.ClientDel.What;
 import pbx.Model.ServerMsg.MessageCase;
 
+import com.alibaba.fastjson.JSONObject;
 import com.google.protobuf.ByteString;
 //import com.google.protobuf.Descriptors.FieldDescriptor;
 //import com.google.protobuf.Message;
@@ -17,6 +18,7 @@ import com.google.protobuf.ByteString;
 import java.util.logging.Level; 
 import java.util.logging.Logger;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.logging.*; 
 
 
@@ -135,6 +137,11 @@ class ChatAdminClient implements Runnable{
                 futures.rejectAndPurgeAll(503, t.getMessage());
                 grpc_exit = 1;
                 
+                ChatAdminEvent event = new ChatAdminEvent();
+                event.setEventType(ChatAdminEvent.EVENT_TYPE.NETWORK_FAILURE);
+                event.setReason(t.getMessage());
+                ChatAdminClient.getDefaultInstance().getEventQueue().push(event);
+                
             }
 
             @Override
@@ -213,11 +220,35 @@ class ChatAdminClient implements Runnable{
 						
     }
     
-    public String createChatGroup() {
+    private static String string2Unicode(String string) {
+		StringBuffer unicode = new StringBuffer();
+		for (int i = 0; i < string.length(); i++) {
+			// 取出每一个字符
+			char c = string.charAt(i);
+			// 转换为unicode
+			unicode.append("\\u" + Integer.toHexString(c));
+		}
+ 
+		return unicode.toString();
+	}
+    
+    public String createChatGroup(String topic_name, String pri_comments) {
     	
     	ClientSub.Builder sub_buidler = ClientSub.newBuilder();
     	sub_buidler.setId(genMsgId());
     	sub_buidler.setTopic("new");
+    	//toHex(topic_name.toCharArray());
+    	//String fn = "testsss";
+    	//String uTopic_name = ChatAdminClient.string2Unicode(topic_name);
+    	JSONObject obj = new JSONObject();
+    	obj.put("fn",topic_name);
+    	String pub = obj.toString();
+    	sub_buidler.getSetQueryBuilder().getDescBuilder().setPublic(ByteString.copyFrom(pub.getBytes()));
+    	JSONObject pri_obj = new JSONObject();
+    	pri_obj.put("comment",pri_comments);
+    	String prv=pri_obj.toString();
+    	sub_buidler.getSetQueryBuilder().getDescBuilder().setPrivate(ByteString.copyFrom(prv.getBytes()));
+    	
     	//FieldDescriptor filed = sub_builder.
     	//Message msg = new Message();
     	//MessageOrBuilder
@@ -231,7 +262,7 @@ class ChatAdminClient implements Runnable{
     	logger.info("sending msg createChatGroup " + sub_buidler.getId());
     	cliObserver.onNext(chatMessage.build());
 	
-    	ChatSubMsgResponseHandler sub_handler = new ChatSubMsgResponseHandler();
+    	ChatAdminCreateGroupMsgResponseHandler sub_handler = new ChatAdminCreateGroupMsgResponseHandler();
         ChatPromisedReply reply = new ChatPromisedReply(sub_handler);
         futures.push(sub_buidler.getId(), reply);
         
@@ -259,7 +290,7 @@ class ChatAdminClient implements Runnable{
     	
     	cliObserver.onNext(chatMessage.build());
 	
-    	ChatSubMsgResponseHandler sub_handler = new ChatSubMsgResponseHandler();
+    	ChatAdminCreateGroupMsgResponseHandler sub_handler = new ChatAdminCreateGroupMsgResponseHandler();
         ChatPromisedReply reply = new ChatPromisedReply(sub_handler);
         futures.push(sub_buidler.getId(), reply);
         
@@ -281,6 +312,10 @@ class ChatAdminClient implements Runnable{
     	
     	cliObserver.onNext(chatMessage.build());
     	
+    	ChatAdminDelGroupMsgResponseHandler sub_handler = new ChatAdminDelGroupMsgResponseHandler();
+        ChatPromisedReply reply = new ChatPromisedReply(sub_handler);
+        futures.push(del_builder.getId(), reply);
+        
     	return del_builder.getId();
     }
     
@@ -317,6 +352,9 @@ class ChatAdminClient implements Runnable{
     	this.eventNotifier = eventNoitifier;
     }
     
+    public ChatAdminEventQueue getEventQueue() {
+    	return eventQueue;
+    }
    
     public static void main(String[] args) throws InterruptedException {
     	

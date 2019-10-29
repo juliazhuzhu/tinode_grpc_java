@@ -35,7 +35,7 @@ public class ChatAdminEventQueue implements Runnable{
 				if (ChatAdminClient.getDefaultInstance().getEventNotifier() != null) {
 					ChatAdminClient.getDefaultInstance().getEventNotifier().onEvent(event);
 				}
-				logger.info("notify event ent type " + event.getEventType());
+				logger.info("notify event end type " + event.getEventType());
 			}
 		}
 	}

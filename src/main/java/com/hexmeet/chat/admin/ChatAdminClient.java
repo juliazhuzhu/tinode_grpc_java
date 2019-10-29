@@ -26,7 +26,7 @@ import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
 
-class ChatAdminClient implements Runnable{
+public class ChatAdminClient implements Runnable{
 	
     private String 						host;
     private int							port;

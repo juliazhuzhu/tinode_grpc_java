@@ -29,8 +29,17 @@ Please add following dependencies to your pom.
 
 
 2.APIs
-ChatAdminClient is the object that interact with the server directly, you need to use object to configure , login and create/del chat groups. Also please be aware that the communication pattern in the project is asynchronized. The interface ChatEventNotifier is a place where you can handle events sent from server.
+ChatAdminClient is the object that interact with the server directly, you need to use the object to configure logs, login server and create/del chat groups. Also please be aware that the communication pattern in the project is asynchronized. The interface ChatEventNotifier is the place where you can implements your event handler and process events sent from server.
 
- 
+3.Events
+ChatAdminEvent
+    ChatAdminMsgEvent
+        ChatAdminGroupMsgEvent
+
+
+The above hierarchy shows its relationship. We have 8 type of events, the relation between the event type and the event class is also listd.
+HI_FAILURE,LOGIN_SUCCESS,LOGIN_FAILURE -- ChatAdminMsgEvent
+ADDGROUP_SUCESS,ADDGROUP_FAILURE,DELGROUP_SUCESS,DELGROUP_FAILURE -- ChatAdminGroupMsgEvent
+NETWORK_FAILURE -- ChatAdminEvent
 
 

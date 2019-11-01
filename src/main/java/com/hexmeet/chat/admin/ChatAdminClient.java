@@ -1,6 +1,7 @@
 package com.hexmeet.chat.admin;
 
 import pbx.NodeGrpc;
+import pbx.Model.ClientAcc;
 import pbx.Model.ClientDel;
 import pbx.Model.ClientHi;
 import pbx.Model.ClientLogin;
@@ -180,6 +181,11 @@ public class ChatAdminClient implements Runnable{
     }
     
     public void sendHi() {
+    	
+    	 //ClientDel.Builder del_builder = ClientDel.newBuilder();
+    	 //del_builder.setWhatValue(1);//user
+    	 //del_builder.setUserId(value);
+    	 
     	 ClientHi.Builder hi_buider = ClientHi.newBuilder();
          hi_buider.setPlatform("Linux");
          hi_buider.setId(genMsgId());
@@ -198,6 +204,24 @@ public class ChatAdminClient implements Runnable{
          ChatPromisedReply reply = new ChatPromisedReply(hi_handler);
          futures.push(hi_buider.getId(), reply);
          
+    }
+    
+    public void delAnonymousUser(String userid) {
+    	ClientDel.Builder del_builder = ClientDel.newBuilder();
+    	del_builder.setId(genMsgId());
+    	del_builder.setWhat(What.forNumber(3));
+    	del_builder.setUserId(userid);
+    	ClientDel del = del_builder.build();
+    	
+    	pbx.Model.ClientMsg.Builder chatMessage = ClientMsg.newBuilder().
+					setDel(del);
+    	logger.info("sending msg id " + del_builder.getId() + " to del user "+userid);
+        //put it into futures
+        cliObserver.onNext(chatMessage.build());
+        ChatAdminDelUsrMsgResponseHander del_handler = new ChatAdminDelUsrMsgResponseHander();
+        ChatPromisedReply reply = new ChatPromisedReply(del_handler);
+        futures.push(del_builder.getId(), reply);
+    	
     }
     
     public void login() {
@@ -248,6 +272,8 @@ public class ChatAdminClient implements Runnable{
     	pri_obj.put("comment",pri_comments);
     	String prv=pri_obj.toString();
     	sub_buidler.getSetQueryBuilder().getDescBuilder().setPrivate(ByteString.copyFrom(prv.getBytes()));
+    	sub_buidler.getSetQueryBuilder().getDescBuilder().getDefaultAcsBuilder().setAnon("JRWS");
+    	//sub_buidler.set
     	
     	//FieldDescriptor filed = sub_builder.
     	//Message msg = new Message();

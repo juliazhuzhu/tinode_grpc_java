@@ -17,7 +17,7 @@ public class ChatAdminDelGroupMsgResponseHandler extends ChatServerMsgHandlerImp
 		
 		
 		ChatAdminGroupMsgEvent event = new ChatAdminGroupMsgEvent();
-		event.setEventType(ChatAdminEvent.EVENT_TYPE.DELGROUP_SUCESS);
+		event.setEventType(ChatAdminEvent.EVENT_TYPE.DELGROUP_SUCCESS);
 		event.setMsgId(msgId);
 		event.setGroupId(topic);
 		ChatAdminClient.getDefaultInstance().getEventQueue().push(event);

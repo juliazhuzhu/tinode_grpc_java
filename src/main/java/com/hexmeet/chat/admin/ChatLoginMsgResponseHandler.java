@@ -1,6 +1,6 @@
 package com.hexmeet.chat.admin;
 
-import java.io.UnsupportedEncodingException;
+
 import java.util.logging.Logger;
 
 import pbx.Model.ServerMsg;
@@ -14,7 +14,8 @@ public class ChatLoginMsgResponseHandler extends ChatServerMsgHandlerImpl {
 		//to notify that login is okay
 		logger.info("login is oky");
 		notifyChatAdminMsgEvent(msg.getCtrl().getId(),"ok",ChatAdminEvent.EVENT_TYPE.LOGIN_SUCCESS);
-		//ChatAdminClient.getDefaultInstance().createChatGroup("hleelo", "");
+		//ChatAdminClient.getDefaultInstance().createChatGroup("dfd", "");
+		//ChatAdminClient.getDefaultInstance().delAnonymousUser("usr3YwwbOC7LhY");
 	}
 	
 	@Override
@@ -24,10 +25,6 @@ public class ChatLoginMsgResponseHandler extends ChatServerMsgHandlerImpl {
 		logger.warning("login failure "+ text);
 		
 		notifyChatAdminMsgEvent(msgId,text,ChatAdminEvent.EVENT_TYPE.LOGIN_FAILURE);
-
-
-		
-	
 		
 	}
 }

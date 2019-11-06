@@ -45,7 +45,7 @@ public class ChatAdminClient implements Runnable{
     private ChatEventNotifier			eventNotifier;
     private ChatAdminEventQueue			eventQueue;
     private Thread 						event_thread;
-    
+    private FileHandler 				fh;
     static {
       DEFAULT_INSTANCE = new ChatAdminClient();
     }
@@ -60,11 +60,16 @@ public class ChatAdminClient implements Runnable{
     	port = 6061;
     	
     	try {
-    		FileHandler fh;  
+    		  
     		if (logFilePath == null) {
-    			logFilePath = "adminchat.log";
+    			logFilePath = "adminchat.%g.log";
     		}
-            fh = new FileHandler(logFilePath);  
+    		else {
+    			logFilePath = logFilePath + "/adminchat.%g.log";
+    			
+    		}
+    		
+            fh = new FileHandler(logFilePath,5242880,5,true);
             logger.addHandler(fh);
             SimpleFormatter formatter = new SimpleFormatter();  
             fh.setFormatter(formatter);  
@@ -365,8 +370,14 @@ public class ChatAdminClient implements Runnable{
     	this.password = password;
     }
     
-    public void setLogPath(String path) {
+    public void setLogPath(String path) throws SecurityException, IOException {
     	logFilePath = path;
+    	logFilePath = logFilePath + "/adminchat.%g.log";
+    	logger.removeHandler(fh);
+	    fh = new FileHandler(logFilePath,5242880,5,true);
+	    logger.addHandler(fh);
+	    SimpleFormatter formatter = new SimpleFormatter();  
+	    fh.setFormatter(formatter);  
     }
     
     public ChatEventNotifier getEventNotifier() {
@@ -385,11 +396,18 @@ public class ChatAdminClient implements Runnable{
     public static void main(String[] args) throws InterruptedException {
     	
     	ChatAdminClient admin = ChatAdminClient.getDefaultInstance();
-    	//admin.setHost("172.24.0.63");
-    	//admin.setPort(6061);
+    	admin.setHost("172.24.0.63");
+    	admin.setPort(6061);
     	admin.setUser("xena");
     	admin.setPassword("xena123");
-    	admin.setLogPath("/Users/zhuyiye/Downloads/MyLogFile.log");
+    	try {
+    		admin.setLogPath("/Users/zhuyiye/Downloads");
+    	}
+		 catch (SecurityException e) {  
+	            e.printStackTrace();  
+	     } catch (IOException e) {  
+	            e.printStackTrace();  
+	     }  
     	Thread admin_thread = new Thread(admin);
     	admin_thread.start();
     	//admin.login();

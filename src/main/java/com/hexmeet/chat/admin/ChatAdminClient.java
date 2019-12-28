@@ -160,20 +160,29 @@ public class ChatAdminClient implements Runnable{
     	logger.info("messageLoop started " + host + " " + port);
     	sendHi();
     }
+    
     @Override
     public void run() {
     	System.out.println("loop begins");
     	//futures.start();
     	messageLoop();
     	event_thread.start();
+    	int count = 0;
     	while (true) {
 	    	if(grpc_exit == 1) {
 	    		//messageLoop()
+	    		//eventQueue.stop();
 	    		return;
 	    	}
     		try {
     			futures.process();
     			Thread.sleep(500);
+    			count++;
+    			if (count == 10) {
+    				ChatAdminClient admin = ChatAdminClient.getDefaultInstance();
+    				admin.heatBeat();
+    				count = 0;
+    			}
     		}catch (InterruptedException e) {
  
             }
@@ -183,6 +192,23 @@ public class ChatAdminClient implements Runnable{
     public void stop() {
     	grpc_exit = 1;
     	eventQueue.stop();
+    }
+    
+    public void heatBeat() {
+    	
+    	ClientHi.Builder hi_buider = ClientHi.newBuilder();
+        hi_buider.setPlatform("Linux");
+        hi_buider.setId(genMsgId());
+        hi_buider.setLang("Chinses");
+        //hi_buider.setDeviceId("3333");
+        hi_buider.setVer("0.15.14");
+        ClientHi hi = hi_buider.build();
+        
+        pbx.Model.ClientMsg.Builder chatMessage = ClientMsg.newBuilder().
+        						setHi(hi);
+        
+        logger.info("sending msg heartbeat " + hi_buider.getId());
+        cliObserver.onNext(chatMessage.build());
     }
     
     public void sendHi() {
@@ -373,7 +399,10 @@ public class ChatAdminClient implements Runnable{
     public void setLogPath(String path) throws SecurityException, IOException {
     	logFilePath = path;
     	logFilePath = logFilePath + "/adminchat.%g.log";
-    	logger.removeHandler(fh);
+    	if (fh != null) {
+    		logger.removeHandler(fh);
+    		fh.close();
+    	}
 	    fh = new FileHandler(logFilePath,5242880,5,true);
 	    logger.addHandler(fh);
 	    SimpleFormatter formatter = new SimpleFormatter();  
@@ -396,10 +425,11 @@ public class ChatAdminClient implements Runnable{
     public static void main(String[] args) throws InterruptedException {
     	
     	ChatAdminClient admin = ChatAdminClient.getDefaultInstance();
-    	admin.setHost("172.24.0.63");
+    	admin.setHost("127.0.0.1");
     	admin.setPort(6061);
     	admin.setUser("xena");
     	admin.setPassword("xena123");
+    	
     	try {
     		admin.setLogPath("/Users/zhuyiye/Downloads");
     	}
@@ -407,7 +437,8 @@ public class ChatAdminClient implements Runnable{
 	            e.printStackTrace();  
 	     } catch (IOException e) {  
 	            e.printStackTrace();  
-	     }  
+	     } 
+    	
     	Thread admin_thread = new Thread(admin);
     	admin_thread.start();
     	//admin.login();

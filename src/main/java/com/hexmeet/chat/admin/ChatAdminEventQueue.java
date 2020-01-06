@@ -26,6 +26,12 @@ public class ChatAdminEventQueue implements Runnable{
 			synchronized(this) {
 				if (queue.size() > 0) {
 					event = queue.poll();
+				}else {
+					try {
+						Thread.sleep(100);
+					}catch (InterruptedException e) {
+						 
+		            }
 				}
 			}
 			if (event != null) {
@@ -37,6 +43,7 @@ public class ChatAdminEventQueue implements Runnable{
 				}
 				logger.info("notify event end type " + event.getEventType());
 			}
+			
 		}
 	}
 	

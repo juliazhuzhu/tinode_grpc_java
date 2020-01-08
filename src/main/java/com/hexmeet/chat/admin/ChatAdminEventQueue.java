@@ -23,16 +23,19 @@ public class ChatAdminEventQueue implements Runnable{
 			//notify the notifier
 			//log print time
 			ChatAdminEvent event = null;
+			int que_size = 0;
 			synchronized(this) {
-				if (queue.size() > 0) {
+				que_size = queue.size();
+				if (que_size > 0) {
 					event = queue.poll();
-				}else {
-					try {
-						Thread.sleep(100);
-					}catch (InterruptedException e) {
-						 
-		            }
 				}
+			}
+			if (que_size == 0) {
+				try {
+					Thread.sleep(100);
+				}catch (InterruptedException e) {
+					 
+	            }
 			}
 			if (event != null) {
 				

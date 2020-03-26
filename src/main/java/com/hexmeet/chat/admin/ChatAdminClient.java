@@ -26,6 +26,7 @@ import java.util.logging.*;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
+import java.util.*;
 
 public class ChatAdminClient implements Runnable{
 	
@@ -46,6 +47,7 @@ public class ChatAdminClient implements Runnable{
     private ChatAdminEventQueue			eventQueue;
     private Thread 						event_thread;
     private FileHandler 				fh;
+    private Map<String, List<String>> 	usermap;
     static {
       DEFAULT_INSTANCE = new ChatAdminClient();
     }
@@ -73,6 +75,8 @@ public class ChatAdminClient implements Runnable{
             logger.addHandler(fh);
             SimpleFormatter formatter = new SimpleFormatter();  
             fh.setFormatter(formatter);  
+            
+            usermap = new HashMap<String, List<String>>(); 
     	}
         catch (SecurityException e) {  
             e.printStackTrace();  
@@ -207,7 +211,7 @@ public class ChatAdminClient implements Runnable{
         pbx.Model.ClientMsg.Builder chatMessage = ClientMsg.newBuilder().
         						setHi(hi);
         
-        logger.info("sending msg heartbeat " + hi_buider.getId());
+        //logger.info("sending msg heartbeat " + hi_buider.getId());
         cliObserver.onNext(chatMessage.build());
     }
     
@@ -235,6 +239,37 @@ public class ChatAdminClient implements Runnable{
          ChatPromisedReply reply = new ChatPromisedReply(hi_handler);
          futures.push(hi_buider.getId(), reply);
          
+    }
+    
+    public void addAnonymousUserToGroup(String userid, String groupid) {
+    	
+    	logger.info("addAnonymousUser " + userid + " grouid "+groupid);
+    	//usermap.put(groupid, value)
+    	List<String> userList = usermap.get(groupid);
+    	if (userList != null) {
+    		userList.add(userid);
+    	}else {
+    		List<String> new_userList = new ArrayList<String>();
+        	usermap.put(groupid,new_userList);
+        	new_userList.add(userid);
+    	}
+    	System.out.print(usermap.size());
+    }
+    
+    public void delAnonymousUserFromGroup(String groupid) {
+    	logger.info("delAnonymousUserFromGroup grouid "+groupid);
+    	List<String> userList = usermap.get(groupid);
+    	if (userList != null) {
+    		for(String usr:userList){
+               // System.out.println(usr);
+                delAnonymousUser(usr);
+            }
+    		
+    		usermap.remove(groupid);
+    	}
+    	
+    	//System.out.print(usermap.size());
+    	
     }
     
     public void delAnonymousUser(String userid) {
@@ -313,6 +348,8 @@ public class ChatAdminClient implements Runnable{
     	//sub_buidler.setField(field, value)
     	
     	//sub_buidler.setTopicBytes()
+    	//List userList = new List<String>();
+    	
     	ClientSub sub = sub_buidler.build();
     	pbx.Model.ClientMsg.Builder chatMessage = ClientMsg.newBuilder().
 				setSub(sub);
@@ -356,6 +393,7 @@ public class ChatAdminClient implements Runnable{
     
     public String delChatGroup(String groupId) {
     	
+    	delAnonymousUserFromGroup(groupId);
     	ClientDel.Builder del_builder = ClientDel.newBuilder();
     	del_builder.setId(genMsgId());
     	del_builder.setTopic(groupId);
@@ -427,8 +465,8 @@ public class ChatAdminClient implements Runnable{
     	ChatAdminClient admin = ChatAdminClient.getDefaultInstance();
     	admin.setHost("127.0.0.1");
     	admin.setPort(6061);
-    	admin.setUser("xena");
-    	admin.setPassword("xena123");
+    	admin.setUser("hexmeetim");
+    	admin.setPassword("2ghlmcl@#$");
     	
     	try {
     		admin.setLogPath("/Users/zhuyiye/Downloads");
@@ -442,6 +480,8 @@ public class ChatAdminClient implements Runnable{
     	Thread admin_thread = new Thread(admin);
     	admin_thread.start();
     	//admin.login();
+    	
+    	
     	admin_thread.join();
         
     	System.out.println("app exited...");

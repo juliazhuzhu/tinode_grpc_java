@@ -277,6 +277,7 @@ public class ChatAdminClient implements Runnable{
     	del_builder.setId(genMsgId());
     	del_builder.setWhat(What.forNumber(3));
     	del_builder.setUserId(userid);
+    	del_builder.setHard(true);
     	ClientDel del = del_builder.build();
     	
     	pbx.Model.ClientMsg.Builder chatMessage = ClientMsg.newBuilder().
@@ -398,6 +399,7 @@ public class ChatAdminClient implements Runnable{
     	del_builder.setId(genMsgId());
     	del_builder.setTopic(groupId);
     	del_builder.setWhat(What.forNumber(1));
+    	del_builder.setHard(true);
     	
     	ClientDel del = del_builder.build();
     	pbx.Model.ClientMsg.Builder chatMessage = ClientMsg.newBuilder().
@@ -464,7 +466,7 @@ public class ChatAdminClient implements Runnable{
     	
     	ChatAdminClient admin = ChatAdminClient.getDefaultInstance();
     	admin.setHost("127.0.0.1");
-    	admin.setPort(6061);
+    	admin.setPort(6090);
     	admin.setUser("hexmeetim");
     	admin.setPassword("2ghlmcl@#$");
     	

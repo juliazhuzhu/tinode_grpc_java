@@ -28,7 +28,7 @@ public class ChatAdminDelGroupMsgResponseHandler extends ChatServerMsgHandlerImp
 	@Override
 	public void onFailure(String msgId,int code, String text) {
 		
-		logger.warning("del chat gropu failure msgid: " + msgId);
+		logger.warning("del chat gropu failure msgid: " + msgId + "code:" + code + "reason " + text);
 		
 		ChatAdminGroupMsgEvent event = new ChatAdminGroupMsgEvent();
 		event.setEventType(ChatAdminEvent.EVENT_TYPE.DELGROUP_FAILURE);

@@ -113,7 +113,7 @@ public class ChatAdminClient implements Runnable{
             public void onNext(ServerMsg msg) {
                 // Display the message
             	//System.out.println(msg.getMessageCase());
-            	logger.info("onNext: " + msg.getMessageCase() + " " + msg.getCtrl().getId() + " " + msg.getCtrl().getCode());
+            	//logger.info("onNext: " + msg.getMessageCase() + " " + msg.getCtrl().getId() + " " + msg.getCtrl().getCode());
             	if (MessageCase.CTRL == msg.getMessageCase()) {
             		//hadle hi
             		//System.out.println(msg.getCtrl().getId());
@@ -126,7 +126,7 @@ public class ChatAdminClient implements Runnable{
 	            			
 	            		}
 	            		else {
-	            			logger.info("onNext: " + msg.getCtrl().getText());
+	            			//logger.info("onNext: " + msg.getCtrl().getText());
 	            			String text = msg.getCtrl().getText();
 	            			//ByteString content = msg.getCtrl().getParamsMap().get("what");
 	            			//String reason = content.toString();
@@ -212,7 +212,8 @@ public class ChatAdminClient implements Runnable{
         						setHi(hi);
         
         //logger.info("sending msg heartbeat " + hi_buider.getId());
-        cliObserver.onNext(chatMessage.build());
+        //cliObserver.onNext(chatMessage.build());
+        sendMessage(chatMessage);
     }
     
     public void sendHi() {
@@ -234,7 +235,8 @@ public class ChatAdminClient implements Runnable{
          
          logger.info("sending msg hi " + hi_buider.getId());
          //put it into futures
-         cliObserver.onNext(chatMessage.build());
+         //cliObserver.onNext(chatMessage.build());
+         sendMessage(chatMessage);
          ChatHiMsgResponseHandler hi_handler = new ChatHiMsgResponseHandler();
          ChatPromisedReply reply = new ChatPromisedReply(hi_handler);
          futures.push(hi_buider.getId(), reply);
@@ -284,7 +286,8 @@ public class ChatAdminClient implements Runnable{
 					setDel(del);
     	logger.info("sending msg id " + del_builder.getId() + " to del user "+userid);
         //put it into futures
-        cliObserver.onNext(chatMessage.build());
+        //cliObserver.onNext(chatMessage.build());
+    	sendMessage(chatMessage);
         ChatAdminDelUsrMsgResponseHander del_handler = new ChatAdminDelUsrMsgResponseHander();
         ChatPromisedReply reply = new ChatPromisedReply(del_handler);
         futures.push(del_builder.getId(), reply);
@@ -302,8 +305,8 @@ public class ChatAdminClient implements Runnable{
 					setLogin(login);
     	
     	logger.info("sending msg login " + login_builder.getId());
-    	cliObserver.onNext(chatMessage.build());
-    	
+    	//cliObserver.onNext(chatMessage.build());
+    	sendMessage(chatMessage);
     	
         ChatLoginMsgResponseHandler login_handler = new ChatLoginMsgResponseHandler();
         ChatPromisedReply reply = new ChatPromisedReply(login_handler);
@@ -355,7 +358,8 @@ public class ChatAdminClient implements Runnable{
     	pbx.Model.ClientMsg.Builder chatMessage = ClientMsg.newBuilder().
 				setSub(sub);
     	logger.info("sending msg createChatGroup " + sub_buidler.getId());
-    	cliObserver.onNext(chatMessage.build());
+    	//cliObserver.onNext(chatMessage.build());
+    	sendMessage(chatMessage);
 	
     	ChatAdminCreateGroupMsgResponseHandler sub_handler = new ChatAdminCreateGroupMsgResponseHandler();
         ChatPromisedReply reply = new ChatPromisedReply(sub_handler);
@@ -383,8 +387,9 @@ public class ChatAdminClient implements Runnable{
     	
     	logger.info("sending msg attachChatGroup " + sub_buidler.getId() + " " + groupId);
     	
-    	cliObserver.onNext(chatMessage.build());
-	
+    	//cliObserver.onNext(chatMessage.build());
+    	sendMessage(chatMessage);
+    	
     	ChatAdminCreateGroupMsgResponseHandler sub_handler = new ChatAdminCreateGroupMsgResponseHandler();
         ChatPromisedReply reply = new ChatPromisedReply(sub_handler);
         futures.push(sub_buidler.getId(), reply);
@@ -407,7 +412,8 @@ public class ChatAdminClient implements Runnable{
     	
     	logger.info("sending msg delChatGroup " + del_builder.getId() + " " + groupId);
     	
-    	cliObserver.onNext(chatMessage.build());
+    	//cliObserver.onNext(chatMessage.build());
+    	sendMessage(chatMessage);
     	
     	ChatAdminDelGroupMsgResponseHandler sub_handler = new ChatAdminDelGroupMsgResponseHandler();
         ChatPromisedReply reply = new ChatPromisedReply(sub_handler);
@@ -417,7 +423,15 @@ public class ChatAdminClient implements Runnable{
     }
     
     public void sendMessage(pbx.Model.ClientMsg.Builder chatMessage) {
-    	cliObserver.onNext(chatMessage.build());
+    	synchronized (this) {
+    		cliObserver.onNext(chatMessage.build());
+    		try {
+				Thread.sleep(20);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    	}
     }
     
     public void setHost(String host) {
@@ -466,7 +480,7 @@ public class ChatAdminClient implements Runnable{
     	
     	ChatAdminClient admin = ChatAdminClient.getDefaultInstance();
     	admin.setHost("127.0.0.1");
-    	admin.setPort(6090);
+    	admin.setPort(6061);
     	admin.setUser("hexmeetim");
     	admin.setPassword("2ghlmcl@#$");
     	

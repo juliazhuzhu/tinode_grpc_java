@@ -14,8 +14,23 @@ public class ChatLoginMsgResponseHandler extends ChatServerMsgHandlerImpl {
 		//to notify that login is okay
 		logger.info("login is oky");
 		notifyChatAdminMsgEvent(msg.getCtrl().getId(),"ok",ChatAdminEvent.EVENT_TYPE.LOGIN_SUCCESS);
-		//ChatAdminClient.getDefaultInstance().createChatGroup("dfd", "");
-		//ChatAdminClient.getDefaultInstance().delAnonymousUser("usr3YwwbOC7LhY");
+		/*for (int i = 0 ;  i < 20; i++) {
+			ChatTestThread test = new ChatTestThread();
+			Thread test_thread = new Thread(test);
+			test_thread.start();
+		}*/
+		
+		//ChatAdminClient.getDefaultInstance().delAnonymousUser("usruLJZvKAWGLc");
+		
+		//ChatAdminClient.getDefaultInstance().addAnonymousUserToGroup("usr113445","grp01oXQ8x3y0s");
+		//ChatAdminClient.getDefaultInstance().addAnonymousUserToGroup("usr113446","grp01oXQ8x3y0s");
+		//ChatAdminClient.getDefaultInstance().addAnonymousUserToGroup("usr113447","grp01oXQ8x3y0s");
+		
+		//ChatAdminClient.getDefaultInstance().delChatGroup("grpnkSuv1OPiD8");
+		//ChatAdminClient.getDefaultInstance().delChatGroup("grpnkSuv1OPiD8");
+		//ChatAdminClient.getDefaultInstance().delChatGroup("grpnkSuv1OPiD8");
+		
+		//ChatAdminClient.getDefaultInstance().delAnonymousUser("usrMo7qmZfsE3k");
 	}
 	
 	@Override

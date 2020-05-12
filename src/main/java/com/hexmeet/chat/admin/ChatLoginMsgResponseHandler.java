@@ -20,6 +20,8 @@ public class ChatLoginMsgResponseHandler extends ChatServerMsgHandlerImpl {
 			test_thread.start();
 		}*/
 		
+		//ChatAdminClient.getDefaultInstance().createChatGroup("beluga", "");
+		
 		//ChatAdminClient.getDefaultInstance().delAnonymousUser("usruLJZvKAWGLc");
 		
 		//ChatAdminClient.getDefaultInstance().addAnonymousUserToGroup("usr113445","grp01oXQ8x3y0s");

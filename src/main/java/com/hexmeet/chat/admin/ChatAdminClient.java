@@ -48,6 +48,7 @@ public class ChatAdminClient implements Runnable{
     private Thread 						event_thread;
     private FileHandler 				fh;
     private Map<String, List<String>> 	usermap;
+    private final Object msgLock	=  new Object();
     static {
       DEFAULT_INSTANCE = new ChatAdminClient();
     }
@@ -113,26 +114,32 @@ public class ChatAdminClient implements Runnable{
             public void onNext(ServerMsg msg) {
                 // Display the message
             	//System.out.println(msg.getMessageCase());
-            	//logger.info("onNext: " + msg.getMessageCase() + " " + msg.getCtrl().getId() + " " + msg.getCtrl().getCode());
+            	logger.info("onNext: " + msg.getMessageCase() + " " + msg.getCtrl().getId() + " " + msg.getCtrl().getCode());
             	if (MessageCase.CTRL == msg.getMessageCase()) {
             		//hadle hi
             		//System.out.println(msg.getCtrl().getId());
             		//System.out.println(msg.getCtrl().getCode());
+            		//if (msg.getCtrl().getCode() != 201) 
+            		//	logger.info("onNext: retrieve " + msg.getCtrl().getId());
             		ChatPromisedReply reply = futures.retrieveReply(msg.getCtrl().getId());
             		if (reply != null) {
 	            		int code = msg.getCtrl().getCode();
+	            		logger.info("onNext: " + code);
 	            		if (code >= 200 && code < 400) {
 	            			reply.resolve(msg);
 	            			
 	            		}
 	            		else {
-	            			//logger.info("onNext: " + msg.getCtrl().getText());
+	            			logger.info("onNext reject: " + msg.getCtrl().getText());
 	            			String text = msg.getCtrl().getText();
 	            			//ByteString content = msg.getCtrl().getParamsMap().get("what");
 	            			//String reason = content.toString();
 	            			reply.reject(msg.getCtrl().getId(),code,text,"");
 	            			
 	            		}
+            		}else {
+            			//if (msg.getCtrl().getCode() != 201)
+            			//	logger.info("onNext: failure to locate " + msg.getMessageCase() + " " + msg.getCtrl().getId() + " " + msg.getCtrl().getCode());
             		}
             		//handle 
             	}
@@ -357,14 +364,14 @@ public class ChatAdminClient implements Runnable{
     	ClientSub sub = sub_buidler.build();
     	pbx.Model.ClientMsg.Builder chatMessage = ClientMsg.newBuilder().
 				setSub(sub);
-    	logger.info("sending msg createChatGroup " + sub_buidler.getId());
+    	logger.info("createChatGroup " + sub_buidler.getId());
     	//cliObserver.onNext(chatMessage.build());
     	sendMessage(chatMessage);
 	
     	ChatAdminCreateGroupMsgResponseHandler sub_handler = new ChatAdminCreateGroupMsgResponseHandler();
         ChatPromisedReply reply = new ChatPromisedReply(sub_handler);
         futures.push(sub_buidler.getId(), reply);
-        
+        logger.info("createChatGroup futrues id " + sub_buidler.getId());
         
     	return sub_buidler.getId();
     }
@@ -423,14 +430,9 @@ public class ChatAdminClient implements Runnable{
     }
     
     public void sendMessage(pbx.Model.ClientMsg.Builder chatMessage) {
-    	synchronized (this) {
-    		cliObserver.onNext(chatMessage.build());
-    		try {
-				Thread.sleep(20);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+    	synchronized (msgLock) {
+    		cliObserver.onNext(chatMessage.build()); 
+    		
     	}
     }
     
@@ -497,7 +499,14 @@ public class ChatAdminClient implements Runnable{
     	admin_thread.start();
     	//admin.login();
     	
+    	Thread.sleep(1000*20);
+    	ChatAdminClient.getDefaultInstance().createChatGroup("beluga", "");
     	
+    	/*for (int i = 0 ;  i < 20; i++) {
+    		ChatTestThread test = new ChatTestThread();
+    		Thread test_thread = new Thread(test);
+    		test_thread.start();
+		}*/
     	admin_thread.join();
         
     	System.out.println("app exited...");

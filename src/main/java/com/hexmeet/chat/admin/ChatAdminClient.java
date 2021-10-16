@@ -239,6 +239,7 @@ public class ChatAdminClient implements Runnable{
          sendMessage(chatMessage);
          ChatHiMsgResponseHandler hi_handler = new ChatHiMsgResponseHandler();
          ChatPromisedReply reply = new ChatPromisedReply(hi_handler);
+         reply.setMsgId(hi_buider.getId());
          futures.push(hi_buider.getId(), reply);
          
     }
@@ -290,6 +291,7 @@ public class ChatAdminClient implements Runnable{
     	sendMessage(chatMessage);
         ChatAdminDelUsrMsgResponseHander del_handler = new ChatAdminDelUsrMsgResponseHander();
         ChatPromisedReply reply = new ChatPromisedReply(del_handler);
+        reply.setMsgId(del_builder.getId());
         futures.push(del_builder.getId(), reply);
     	
     }
@@ -362,9 +364,10 @@ public class ChatAdminClient implements Runnable{
     	sendMessage(chatMessage);
 	
     	ChatAdminCreateGroupMsgResponseHandler sub_handler = new ChatAdminCreateGroupMsgResponseHandler();
+    	
         ChatPromisedReply reply = new ChatPromisedReply(sub_handler);
+        reply.setMsgId(sub_buidler.getId());
         futures.push(sub_buidler.getId(), reply);
-        
         
     	return sub_buidler.getId();
     }
@@ -392,6 +395,7 @@ public class ChatAdminClient implements Runnable{
     	
     	ChatAdminCreateGroupMsgResponseHandler sub_handler = new ChatAdminCreateGroupMsgResponseHandler();
         ChatPromisedReply reply = new ChatPromisedReply(sub_handler);
+        reply.setMsgId(sub_buidler.getId());
         futures.push(sub_buidler.getId(), reply);
         
         return sub_buidler.getId();
@@ -417,6 +421,7 @@ public class ChatAdminClient implements Runnable{
     	
     	ChatAdminDelGroupMsgResponseHandler sub_handler = new ChatAdminDelGroupMsgResponseHandler();
         ChatPromisedReply reply = new ChatPromisedReply(sub_handler);
+        reply.setMsgId(del_builder.getId());
         futures.push(del_builder.getId(), reply);
         
     	return del_builder.getId();
@@ -485,7 +490,7 @@ public class ChatAdminClient implements Runnable{
     	admin.setPassword("2ghlmcl@#$");
     	
     	try {
-    		admin.setLogPath("/Users/zhuyiye/Downloads");
+    		admin.setLogPath("/home/xiaoye/Downloads");
     	}
 		 catch (SecurityException e) {  
 	            e.printStackTrace();  

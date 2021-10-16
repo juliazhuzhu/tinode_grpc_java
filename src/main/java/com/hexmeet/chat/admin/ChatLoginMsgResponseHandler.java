@@ -37,7 +37,7 @@ public class ChatLoginMsgResponseHandler extends ChatServerMsgHandlerImpl {
 	public void onFailure(String msgId,int code, String text) {
 		//System.out.println("login is faied");
 		//System.out.println(text);
-		logger.warning("login failure "+ text);
+		logger.warning("login failure msgId:"+ msgId + " code:" + code + " reason " + text);
 		
 		notifyChatAdminMsgEvent(msgId,text,ChatAdminEvent.EVENT_TYPE.LOGIN_FAILURE);
 		

@@ -19,7 +19,7 @@ public class ChatAdminDelUsrMsgResponseHander extends ChatServerMsgHandlerImpl {
 	@Override
 	public void onFailure(String msgId,int code, String text) {
 		
-		logger.info("del user failure msgId " + msgId);
+		logger.info("del user failure msgId " + msgId + " code:" + code + " reason " + text);
 		notifyChatAdminMsgEvent(msgId,text,ChatAdminEvent.EVENT_TYPE.DELUSER_FAILURE);
 	}
 }

@@ -13,7 +13,7 @@ public class ChatAdminCreateGroupMsgResponseHandler extends ChatServerMsgHandler
 		String msgId = msg.getCtrl().getId();
 		String topic = msg.getCtrl().getTopic();
 		
-		logger.info("create chat gropu success topic: " + topic + " msgid: " + msgId);
+		logger.info("create chat group success topic: " + topic + " msgid: " + msgId);
 		
 		
 		ChatAdminGroupMsgEvent event = new ChatAdminGroupMsgEvent();
@@ -28,7 +28,7 @@ public class ChatAdminCreateGroupMsgResponseHandler extends ChatServerMsgHandler
 	@Override
 	public void onFailure(String msgId,int code, String text) {
 		
-		logger.warning("create chat gropu failure msgid: " + msgId);
+		logger.warning("create chat group failure msgid: " + msgId + " code:" + code + " reason " + text);
 		
 		ChatAdminGroupMsgEvent event = new ChatAdminGroupMsgEvent();
 		event.setEventType(ChatAdminEvent.EVENT_TYPE.ADDGROUP_FAILURE);

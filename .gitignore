@@ -1,4 +1,6 @@
 target
 .classes
 .class
-.DSStore
+.DS_Store
+.metadata/*
+*.log

@@ -51,6 +51,12 @@ public class ChatFutures {
 				if (now - reply.getGenTime() > 10 * 1000) {
 					reply.reject(reply.getMsgId(), 504, "reject", "timeout");
 					reply_map.remove(entry.getKey());
+					
+					ChatAdminEvent adminevent = new ChatAdminEvent();
+					adminevent.setEventType(ChatAdminEvent.EVENT_TYPE.NETWORK_FAILURE);
+					//event.setMsgId(msgId);
+					ChatAdminClient.getDefaultInstance().getEventQueue().push(adminevent);
+					
 					return;
 					
 				}

@@ -18,7 +18,7 @@ public class ChatHiMsgResponseHandler extends ChatServerMsgHandlerImpl {
 	@Override
 	public void onFailure(String msgId,int code, String text) {
 		
-		logger.info("hi failure code " + code + ", " + text);
+		logger.info("hi failure code msgid:" + msgId + " code:"+ code + " text:" + text);
 		notifyChatAdminMsgEvent(msgId,text,ChatAdminEvent.EVENT_TYPE.HI_FAILURE);
 	}
 }

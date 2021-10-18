@@ -1,0 +1,7 @@
+target
+.classes
+.class
+.DS_Store
+.metadata/*
+*.log
+adminchat.0.log

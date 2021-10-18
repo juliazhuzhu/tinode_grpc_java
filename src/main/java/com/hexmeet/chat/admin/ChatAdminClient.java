@@ -373,6 +373,7 @@ public class ChatAdminClient implements Runnable{
     	ChatAdminCreateGroupMsgResponseHandler sub_handler = new ChatAdminCreateGroupMsgResponseHandler();
     	
         ChatPromisedReply reply = new ChatPromisedReply(sub_handler);
+        reply.setMsgId(sub_buidler.getId());
         futures.push(sub_buidler.getId(), reply);
         logger.info("createChatGroup futrues id " + sub_buidler.getId());
         

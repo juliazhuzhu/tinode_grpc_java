@@ -13,6 +13,7 @@ public class ChatLoginMsgResponseHandler extends ChatServerMsgHandlerImpl {
 		
 		//to notify that login is okay
 		logger.info("login is oky");
+		ChatAdminClient.getDefaultInstance().setAuthenticated(true);
 		notifyChatAdminMsgEvent(msg.getCtrl().getId(),"ok",ChatAdminEvent.EVENT_TYPE.LOGIN_SUCCESS);
 		/*for (int i = 0 ;  i < 20; i++) {
 			ChatTestThread test = new ChatTestThread();
@@ -40,7 +41,7 @@ public class ChatLoginMsgResponseHandler extends ChatServerMsgHandlerImpl {
 		//System.out.println("login is faied");
 		//System.out.println(text);
 		logger.warning("login failure msgId:"+ msgId + " code:" + code + " reason " + text);
-		
+		ChatAdminClient.getDefaultInstance().setAuthenticated(false);
 		notifyChatAdminMsgEvent(msgId,text,ChatAdminEvent.EVENT_TYPE.LOGIN_FAILURE);
 		
 	}

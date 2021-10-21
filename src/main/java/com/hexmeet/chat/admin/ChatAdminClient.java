@@ -49,6 +49,7 @@ public class ChatAdminClient implements Runnable{
     private FileHandler 				fh;
     private Map<String, List<String>> 	usermap;
     private final Object msgLock	=  new Object();
+    private boolean					authenticated = false;
     static {
       DEFAULT_INSTANCE = new ChatAdminClient();
     }
@@ -484,17 +485,25 @@ public class ChatAdminClient implements Runnable{
     public ChatAdminEventQueue getEventQueue() {
     	return eventQueue;
     }
+    
+    public void setAuthenticated(boolean isSucess) {
+    	authenticated = isSucess;
+    }
+    
+    public boolean isAuthenticated() {
+    	return authenticated;
+    }
    
     public static void main(String[] args) throws InterruptedException {
     	
     	ChatAdminClient admin = ChatAdminClient.getDefaultInstance();
     	admin.setHost("127.0.0.1");
     	admin.setPort(6061);
-    	admin.setUser("hexmeetim");
-    	admin.setPassword("2ghlmcl@#$");
+    	admin.setUser("xena");
+    	admin.setPassword("xena123");
     	
     	try {
-    		admin.setLogPath("/home/xiaoye/Downloads");
+    		admin.setLogPath("/Users/zhuyiye/Downloads");
     	}
 		 catch (SecurityException e) {  
 	            e.printStackTrace();  

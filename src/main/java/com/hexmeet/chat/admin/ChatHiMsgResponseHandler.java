@@ -11,7 +11,8 @@ public class ChatHiMsgResponseHandler extends ChatServerMsgHandlerImpl {
 	public void onSucess(ServerMsg msg) {
 		
 		logger.info("hi okay");
-		ChatAdminClient.getDefaultInstance().login();
+		if (!ChatAdminClient.getDefaultInstance().isAuthenticated()) 
+			ChatAdminClient.getDefaultInstance().login();
 		//notifyChatAdminMsgEvent(msg.getCtrl().getId(),"ok",ChatAdminEvent.EVENT_TYPE.LOGIN_SUCCESS);
 	}
 	

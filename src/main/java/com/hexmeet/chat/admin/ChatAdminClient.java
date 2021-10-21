@@ -207,7 +207,7 @@ public class ChatAdminClient implements Runnable{
     
     public void heatBeat() {
     	
-    	ClientHi.Builder hi_buider = ClientHi.newBuilder();
+    	/*ClientHi.Builder hi_buider = ClientHi.newBuilder();
         hi_buider.setPlatform("Linux");
         hi_buider.setId(genMsgId());
         hi_buider.setLang("Chinses");
@@ -220,7 +220,8 @@ public class ChatAdminClient implements Runnable{
         
         //logger.info("sending msg heartbeat " + hi_buider.getId());
         //cliObserver.onNext(chatMessage.build());
-        sendMessage(chatMessage);
+        sendMessage(chatMessage);*/
+    	sendHi();
     }
     
     public void sendHi() {

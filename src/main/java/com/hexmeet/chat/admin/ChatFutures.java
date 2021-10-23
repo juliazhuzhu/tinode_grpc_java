@@ -54,7 +54,7 @@ public class ChatFutures {
 					
 					ChatAdminEvent adminevent = new ChatAdminEvent();
 					adminevent.setEventType(ChatAdminEvent.EVENT_TYPE.NETWORK_FAILURE);
-					//event.setMsgId(msgId);
+					//event.setMsgId(reply.getMsgId());
 					ChatAdminClient.getDefaultInstance().getEventQueue().push(adminevent);
 					
 					return;
@@ -62,6 +62,12 @@ public class ChatFutures {
 				}
 			 
 			}
+		}
+	}
+	
+	public void clear() {
+		synchronized (this) {
+			reply_map.clear();
 		}
 	}
 	

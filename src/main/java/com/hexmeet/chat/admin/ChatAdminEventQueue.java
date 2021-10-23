@@ -61,5 +61,11 @@ public class ChatAdminEventQueue implements Runnable{
 		
 	}
 	
+	public void clear() {
+		synchronized(this){
+			queue.clear();
+		}
+	}
+	
 	private Queue<ChatAdminEvent> queue = new LinkedList<ChatAdminEvent>();
 }

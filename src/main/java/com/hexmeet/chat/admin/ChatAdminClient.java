@@ -85,8 +85,7 @@ public class ChatAdminClient implements Runnable{
         } catch (IOException e) {  
             e.printStackTrace();  
         }  
-    	eventQueue = new ChatAdminEventQueue();
-    	event_thread = new Thread(eventQueue);
+    	
     }
     
     private String genMsgId() {
@@ -175,8 +174,12 @@ public class ChatAdminClient implements Runnable{
     
     @Override
     public void run() {
-    	System.out.println("loop begins");
+    	//System.out.println("loop begins");
+    	logger.info("admin client start host: "+ this.host + ":"+ this.port);
     	//futures.start();
+    	eventQueue = new ChatAdminEventQueue();
+    	event_thread = new Thread(eventQueue);
+    	authenticated = false;
     	messageLoop();
     	event_thread.start();
     	int count = 0;
@@ -184,6 +187,7 @@ public class ChatAdminClient implements Runnable{
 	    	if(grpc_exit == 1) {
 	    		//messageLoop()
 	    		//eventQueue.stop();
+	    		futures.clear();
 	    		return;
 	    	}
     		try {
@@ -202,8 +206,11 @@ public class ChatAdminClient implements Runnable{
     }
     
     public void stop() {
+    	logger.info("admin client stopped ");
     	grpc_exit = 1;
     	eventQueue.stop();
+    	eventQueue.clear();
+    	//event_thread.join();
     }
     
     public void heatBeat() {
@@ -503,7 +510,7 @@ public class ChatAdminClient implements Runnable{
     	admin.setPassword("xena123");
     	
     	try {
-    		admin.setLogPath("/Users/zhuyiye/Downloads");
+    		admin.setLogPath("/home/xiaoye/Downloads");
     	}
 		 catch (SecurityException e) {  
 	            e.printStackTrace();  

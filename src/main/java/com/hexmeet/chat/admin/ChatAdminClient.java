@@ -206,17 +206,18 @@ public class ChatAdminClient implements Runnable{
     }
     
     public void stop() {
-    	logger.info("admin client stopped ");
+    	logger.info("admin client stopped... ");
     	grpc_exit = 1;
     	eventQueue.stop();
     	eventQueue.clear();
     	futures.clear();
-    	try {
+    	/*try {
 			event_thread.join();
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
+    	logger.info("admin client stopped!!! ");
     }
     
     public void heatBeat() {

@@ -114,7 +114,7 @@ public class ChatAdminClient implements Runnable{
             public void onNext(ServerMsg msg) {
                 // Display the message
             	//System.out.println(msg.getMessageCase());
-            	logger.info("onNext: " + msg.getMessageCase() + " " + msg.getCtrl().getId() + " " + msg.getCtrl().getCode());
+            	//logger.info("onNext: " + msg.getMessageCase() + " " + msg.getCtrl().getId() + " " + msg.getCtrl().getCode());
             	if (MessageCase.CTRL == msg.getMessageCase()) {
             		//hadle hi
             		//System.out.println(msg.getCtrl().getId());
@@ -124,13 +124,13 @@ public class ChatAdminClient implements Runnable{
             		ChatPromisedReply reply = futures.retrieveReply(msg.getCtrl().getId());
             		if (reply != null) {
 	            		int code = msg.getCtrl().getCode();
-	            		logger.info("onNext: " + code);
+	            		//logger.info("onNext: " + code);
 	            		if (code >= 200 && code < 400) {
 	            			reply.resolve(msg);
 	            			
 	            		}
 	            		else {
-	            			logger.info("onNext reject: " + msg.getCtrl().getText());
+	            			//logger.info("onNext reject: " + msg.getCtrl().getText());
 	            			String text = msg.getCtrl().getText();
 	            			//ByteString content = msg.getCtrl().getParamsMap().get("what");
 	            			//String reason = content.toString();

@@ -51,6 +51,7 @@ public class ChatAdminEventQueue implements Runnable{
 	}
 	
 	public void stop() {
+		clear();
 		this.run = 0;
 	}
 	

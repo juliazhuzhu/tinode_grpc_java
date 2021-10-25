@@ -210,7 +210,13 @@ public class ChatAdminClient implements Runnable{
     	grpc_exit = 1;
     	eventQueue.stop();
     	eventQueue.clear();
-    	//event_thread.join();
+    	futures.clear();
+    	try {
+			event_thread.join();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
     
     public void heatBeat() {

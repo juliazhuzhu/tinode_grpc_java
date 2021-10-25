@@ -41,6 +41,11 @@ public class ChatLoginMsgResponseHandler extends ChatServerMsgHandlerImpl {
 		//System.out.println("login is faied");
 		//System.out.println(text);
 		logger.warning("login failure msgId:"+ msgId + " code:" + code + " reason " + text);
+		if (code == 409) {
+			ChatAdminClient.getDefaultInstance().setAuthenticated(true);
+			notifyChatAdminMsgEvent(msgId,"ok",ChatAdminEvent.EVENT_TYPE.LOGIN_SUCCESS);
+			return;
+		}
 		ChatAdminClient.getDefaultInstance().setAuthenticated(false);
 		notifyChatAdminMsgEvent(msgId,text,ChatAdminEvent.EVENT_TYPE.LOGIN_FAILURE);
 		

@@ -328,6 +328,7 @@ public class ChatAdminClient implements Runnable{
     	
         ChatLoginMsgResponseHandler login_handler = new ChatLoginMsgResponseHandler();
         ChatPromisedReply reply = new ChatPromisedReply(login_handler);
+        reply.setMsgId(login_builder.getId());
         futures.push(login_builder.getId(), reply);
 						
     }

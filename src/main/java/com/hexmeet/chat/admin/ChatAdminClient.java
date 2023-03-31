@@ -345,7 +345,7 @@ public class ChatAdminClient implements Runnable{
 		return unicode.toString();
 	}
     
-    public String createChatGroup(String topic_name, String pri_comments) {
+    public String createChatGroup(String topic_name, String external_guid) {
     	
     	ClientSub.Builder sub_buidler = ClientSub.newBuilder();
     	sub_buidler.setId(genMsgId());
@@ -358,7 +358,7 @@ public class ChatAdminClient implements Runnable{
     	String pub = obj.toString();
     	sub_buidler.getSetQueryBuilder().getDescBuilder().setPublic(ByteString.copyFrom(pub.getBytes()));
     	JSONObject pri_obj = new JSONObject();
-    	pri_obj.put("comment",pri_comments);
+    	pri_obj.put("external_guid",external_guid);
     	String prv=pri_obj.toString();
     	sub_buidler.getSetQueryBuilder().getDescBuilder().setPrivate(ByteString.copyFrom(prv.getBytes()));
     	sub_buidler.getSetQueryBuilder().getDescBuilder().getDefaultAcsBuilder().setAnon("JRWS");
@@ -376,7 +376,7 @@ public class ChatAdminClient implements Runnable{
     	ClientSub sub = sub_buidler.build();
     	pbx.Model.ClientMsg.Builder chatMessage = ClientMsg.newBuilder().
 				setSub(sub);
-    	logger.info("createChatGroup " + sub_buidler.getId());
+    	logger.info("createChatGroup " + sub_buidler.getId() + " ,external guid " + external_guid);
     	//cliObserver.onNext(chatMessage.build());
     	sendMessage(chatMessage);
 	

@@ -48,6 +48,7 @@ public class ChatAdminEventQueue implements Runnable{
 			}
 			
 		}
+		logger.info("ChatAdminEventQueue run quit.");
 	}
 	
 	public void stop() {

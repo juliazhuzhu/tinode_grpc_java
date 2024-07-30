@@ -1,5 +1,6 @@
 package com.hexmeet.chat.admin;
 
+import com.alibaba.fastjson.JSON;
 import pbx.NodeGrpc;
 import pbx.Model.ClientAcc;
 import pbx.Model.ClientDel;
@@ -27,6 +28,10 @@ import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
 
 public class ChatAdminClient implements Runnable{
 	
@@ -50,6 +55,7 @@ public class ChatAdminClient implements Runnable{
     private Map<String, List<String>> 	usermap;
     private final Object msgLock	=  new Object();
     private boolean					authenticated = false;
+    private ExecutorService executor = Executors.newFixedThreadPool(4);
     static {
       DEFAULT_INSTANCE = new ChatAdminClient();
     }
@@ -88,6 +94,24 @@ public class ChatAdminClient implements Runnable{
     	
     }
     
+    public void start() {
+//    	if (admin_thread == null)
+    	
+//    	admin_thread = new Thread(this);
+//    	
+//    	admin_thread.start();
+
+    	logger.info("admin client start");
+    	executor.submit(this);
+    	try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
+    }
+    
     private String genMsgId() {
     	msgId = msgId + 1;
     	return String.valueOf(msgId);
@@ -96,7 +120,6 @@ public class ChatAdminClient implements Runnable{
     private void messageLoop() {
     	
     	//ChatAdminClient admin = ChatAdminClient.getDefaultInstance();
-    	
     	msgId = 0;
     	grpc_exit = 0;
     	
@@ -105,9 +128,9 @@ public class ChatAdminClient implements Runnable{
                 .usePlaintext(true)
                 .build();
     	stub = NodeGrpc.newStub(channel);
-    	
+//    	stub.withDeadlineAfter(5, TimeUnit.SECONDS);
     	cliObserver = stub.messageLoop(new StreamObserver<ServerMsg>() {
-
+    	
             // Handler for messages from the server
 
             @Override
@@ -151,6 +174,9 @@ public class ChatAdminClient implements Runnable{
             public void onError(Throwable t) {
             	logger.warning("OnError: " + t.getMessage());
                 //System.out.println(t.getMessage());
+            	if (grpc_exit == 1)
+            		return;
+            	
                 futures.rejectAndPurgeAll(503, t.getMessage());
                 grpc_exit = 1;
                 
@@ -175,20 +201,22 @@ public class ChatAdminClient implements Runnable{
     @Override
     public void run() {
     	//System.out.println("loop begins");
+    	
     	logger.info("admin client start host: "+ this.host + ":"+ this.port);
     	//futures.start();
     	eventQueue = new ChatAdminEventQueue();
-    	event_thread = new Thread(eventQueue);
+//    	event_thread = new Thread(eventQueue);
+    	executor.submit(eventQueue);
     	authenticated = false;
     	messageLoop();
-    	event_thread.start();
+//    	event_thread.start();
     	int count = 0;
     	while (true) {
 	    	if(grpc_exit == 1) {
 	    		//messageLoop()
 	    		//eventQueue.stop();
 	    		futures.clear();
-	    		return;
+	    		break;
 	    	}
     		try {
     			futures.process();
@@ -203,13 +231,58 @@ public class ChatAdminClient implements Runnable{
  
             }
         }
+    	
+    	logger.info("admin client run quit.");
     }
     
-    public void stop() {
-    	logger.info("admin client stopping... ");
-    	grpc_exit = 1;
-    	eventQueue.stop();
-    	futures.clear();
+    @SuppressWarnings("deprecation")
+	public void stop() {
+	    	logger.info("admin client stopping... ");
+	    	if (grpc_exit == 1 || eventQueue == null)
+	    		return;
+	    	
+	    	grpc_exit = 1;
+	    	eventQueue.stop();
+//	    	try {
+//				event_thread.join();
+//			} catch (InterruptedException e1) {
+//				// TODO Auto-generated catch block
+//				e1.printStackTrace();
+//			}
+	    	
+	    	futures.clear();
+	    	logger.info("admin client shutdown gprc channel!!! ");
+	    	if (channel != null && !channel.isShutdown()) {
+	    		
+	            channel.shutdown();  // Initiate graceful shutdown
+	            
+	            int tried = 0;
+	            while (!channel.isTerminated()) {
+	            	
+	            	try {  
+	            		if (++tried == 5)
+	            			break;
+	            		logger.info("admin client await gprc channel to termiante!!! ");
+		                if (!channel.awaitTermination(5, TimeUnit.SECONDS)) {  
+		                      
+		                }  
+		            } catch (InterruptedException e) {  
+		                Thread.currentThread().interrupt();  
+		                  
+		            }
+	            }
+	            	
+	    	}
+	    	
+//	    	try {
+//	    		admin_thread.stop();
+//				admin_thread.join();
+//				Thread.sleep(3*1000);//await channel to close
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+        
     	logger.info("admin client stopped!!! ");
     }
     
@@ -355,12 +428,13 @@ public class ChatAdminClient implements Runnable{
     	//String uTopic_name = ChatAdminClient.string2Unicode(topic_name);
     	JSONObject obj = new JSONObject();
     	obj.put("fn",topic_name);
+		obj.put("external_guid",external_guid);
     	String pub = obj.toString();
+
     	sub_buidler.getSetQueryBuilder().getDescBuilder().setPublic(ByteString.copyFrom(pub.getBytes()));
-    	JSONObject pri_obj = new JSONObject();
-    	pri_obj.put("external_guid",external_guid);
-    	String prv=pri_obj.toString();
-    	sub_buidler.getSetQueryBuilder().getDescBuilder().setPrivate(ByteString.copyFrom(prv.getBytes()));
+//    	JSONObject pri_obj = new JSONObject();
+//    	String prv=pri_obj.toString();
+//    	sub_buidler.getSetQueryBuilder().getDescBuilder().setPrivate(ByteString.copyFrom(prv.getBytes()));
     	sub_buidler.getSetQueryBuilder().getDescBuilder().getDefaultAcsBuilder().setAnon("JRWS");
     	//sub_buidler.set
     	
@@ -446,6 +520,8 @@ public class ChatAdminClient implements Runnable{
     }
     
     public void sendMessage(pbx.Model.ClientMsg.Builder chatMessage) {
+    	if (grpc_exit == 1)
+    		return;
     	synchronized (msgLock) {
     		cliObserver.onNext(chatMessage.build()); 
     		
@@ -518,21 +594,18 @@ public class ChatAdminClient implements Runnable{
 	     } catch (IOException e) {  
 	            e.printStackTrace();  
 	     } 
+   
+//    	admin.start();
+//    	Thread.sleep(6*1000);
+//    	ChatAdminClient.getDefaultInstance().createChatGroup("beluga", "");
+    	for (int i = 1; i < 10; i++) {
+    		admin.start();        	
+    		Thread.sleep(1000);
+        	admin.stop();
+    	}
     	
-    	Thread admin_thread = new Thread(admin);
-    	admin_thread.start();
-    	//admin.login();
-    	
-    	Thread.sleep(1000*20);
-    	ChatAdminClient.getDefaultInstance().createChatGroup("beluga", "");
-    	
-    	/*for (int i = 0 ;  i < 20; i++) {
-    		ChatTestThread test = new ChatTestThread();
-    		Thread test_thread = new Thread(test);
-    		test_thread.start();
-		}*/
-    	admin_thread.join();
-        
+    	Thread.sleep(1000);
+    	admin.stop();
     	System.out.println("app exited...");
     	
     	

@@ -125,7 +125,7 @@ public class ChatAdminClient implements Runnable{
     	
     	futures = new ChatFutures();
     	channel = ManagedChannelBuilder.forAddress(host, port)
-                .usePlaintext(true)
+                .usePlaintext()
                 .build();
     	stub = NodeGrpc.newStub(channel);
 //    	stub.withDeadlineAfter(5, TimeUnit.SECONDS);

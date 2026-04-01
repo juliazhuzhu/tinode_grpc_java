@@ -241,8 +241,8 @@ public class ChatAdminClient implements Runnable{
     @SuppressWarnings("deprecation")
 	public void stop() {
 	    	logger.info("admin client stopping... ");
-//	    	if (grpc_exit == 1 || eventQueue == null)
-//	    		return;
+	    	if (grpc_exit == 1 || eventQueue == null)
+	    		return;
 	    	
 	    	grpc_exit = 1;
 	    	eventQueue.stop();

@@ -14,6 +14,8 @@ import pbx.Model.ServerMsg.MessageCase;
 
 import com.alibaba.fastjson.JSONObject;
 import com.google.protobuf.ByteString;
+
+
 //import com.google.protobuf.Descriptors.FieldDescriptor;
 //import com.google.protobuf.Message;
 //import com.google.protobuf.MessageOrBuilder;
@@ -103,6 +105,7 @@ public class ChatAdminClient implements Runnable{
 
     	logger.info("admin client start");
     	executor.submit(this);
+    	
     	try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
@@ -238,8 +241,8 @@ public class ChatAdminClient implements Runnable{
     @SuppressWarnings("deprecation")
 	public void stop() {
 	    	logger.info("admin client stopping... ");
-	    	if (grpc_exit == 1 || eventQueue == null)
-	    		return;
+//	    	if (grpc_exit == 1 || eventQueue == null)
+//	    		return;
 	    	
 	    	grpc_exit = 1;
 	    	eventQueue.stop();
@@ -585,7 +588,8 @@ public class ChatAdminClient implements Runnable{
     	admin.setPort(6061);
     	admin.setUser("xena");
     	admin.setPassword("xena123");
-    	
+    	ChatAdminSampleEventHandler event_handler = new ChatAdminSampleEventHandler();
+    	admin.setEventNotifier(event_handler);
     	try {
     		admin.setLogPath("/home/xiaoye/Downloads");
     	}
@@ -595,18 +599,21 @@ public class ChatAdminClient implements Runnable{
 	            e.printStackTrace();  
 	     } 
    
-//    	admin.start();
+    	admin.start();
 //    	Thread.sleep(6*1000);
 //    	ChatAdminClient.getDefaultInstance().createChatGroup("beluga", "");
-    	for (int i = 1; i < 10; i++) {
-    		admin.start();        	
-    		Thread.sleep(1000);
-        	admin.stop();
+//    	for (int i = 1; i < 10; i++) {
+//    		admin.start();        	
+//    		Thread.sleep(1000);
+//        	admin.stop();
+//    	}
+//    	
+//    	Thread.sleep(1000);
+//    	admin.stop();
+    	while (true) {
+    		Thread.sleep(50);
     	}
-    	
-    	Thread.sleep(1000);
-    	admin.stop();
-    	System.out.println("app exited...");
+//    	System.out.println("app exited...");
     	
     	
     }
